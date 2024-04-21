@@ -18,23 +18,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps: 
-      - name: Debug information
-        run: |
-          echo "GitHub event name: $GITHUB_EVENT_NAME"
-          echo "GitHub head ref: $GITHUB_HEAD_REF"
-          echo "GitHub head ref: $github.head_ref"
-          echo "GitHub head ref: $github.event.pull_request.head.ref"
-          echo "GitHub head ref: $github.event.workflow_dispatch.head.ref"
-          echo "GitHub base ref: $GITHUB_BASE_REF"
-          git fetch --prune --unshallow
-          git branch -a
-          git show-ref
-          git show-ref "refs/heads/$GITHUB_HEAD_REF" || echo "Branch $GITHUB_HEAD_REF does not exist."
-
       - name: checkout repo
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.head_ref }}
+          ref: ${{ github.event.pull_request.head.ref }}
 
       - name: Setup .NET Core SDK
         uses: actions/setup-dotnet@v4
