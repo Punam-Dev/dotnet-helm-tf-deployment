@@ -27,7 +27,20 @@ jobs:
           dotnet-version: ${{ inputs.dotnet-version }}
 
       - run: dotnet build ${{ inputs.sln-path }}
-      
+
       - run: dotnet format ${{ inputs.sln-path }} --verbosity diagnostic
+
+      - name: Check if any changes to commit
+        run: |
+          if git diff --quiet; then
+            echo "No changes to commit. Exiting..."
+            exit 0
+          else
+            git config --local user.email "action@github.com"
+            git config --local user.name "GitHub Action"
+            git add .
+            git commit -m "Auto commit by GitHub Actions"
+            git push
+          fi
 
       - run: dotnet test ${{ inputs.sln-path }}
