@@ -18,9 +18,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps: 
-      - name: Display HEAD reference
-        run: echo ${{ github.ref }}
-        
       - name: checkout repo
         uses: actions/checkout@v4
         with:
