@@ -1,0 +1,29 @@
+name: .Net Build
+# Changed 'on' to enable this workflow to be called from other workflows
+on:
+  workflow_call:
+    # Introduced 'inputs' to define parameters that can be passed when calling this workflow
+    inputs:
+      dotnet-version:
+        description: "Specify the .NET version to use"
+        required: true
+        type: string
+      sln-path:
+        description: "Specify the path to the .sln file"
+        required: true
+        type: string
+      
+jobs: 
+  build:
+    runs-on: ubuntu-latest
+
+    steps: 
+      - name: checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup .NET Core SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ inputs.dotnet-version }}
+
+      - run: dotnet build ${{ inputs.sln-path }} --configuration Release
