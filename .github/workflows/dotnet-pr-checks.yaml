@@ -27,5 +27,7 @@ jobs:
           dotnet-version: ${{ inputs.dotnet-version }}
 
       - run: dotnet build ${{ inputs.sln-path }}
+      
+      - run: dotnet format ${{ inputs.sln-path }} --verbosity diagnostic
 
       - run: dotnet test ${{ inputs.sln-path }}
