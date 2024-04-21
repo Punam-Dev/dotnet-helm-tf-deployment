@@ -18,6 +18,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps: 
+      - name: Debug information
+        run: |
+          echo "GitHub event name: $GITHUB_EVENT_NAME"
+          echo "GitHub head ref: $GITHUB_HEAD_REF"
+          echo "GitHub head ref: github.head_ref"
+          echo "GitHub base ref: $GITHUB_BASE_REF"
+          git fetch --prune --unshallow
+          git branch -a
+          git show-ref
+          git show-ref "refs/heads/$GITHUB_HEAD_REF" || echo "Branch $GITHUB_HEAD_REF does not exist."
+
       - name: checkout repo
         uses: actions/checkout@v4
         with:
