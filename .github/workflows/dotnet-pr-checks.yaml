@@ -26,6 +26,6 @@ jobs:
         with:
           dotnet-version: ${{ inputs.dotnet-version }}
 
-      - run: dotnet build ${{ inputs.sln-path }} --configuration Release
+      - run: dotnet build ${{ inputs.sln-path }}
 
-      - run: dotnet test ${{ inputs.sln-path }} --configuration Release
+      - run: dotnet test ${{ inputs.sln-path }}
