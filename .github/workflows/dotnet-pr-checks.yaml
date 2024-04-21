@@ -22,7 +22,9 @@ jobs:
         run: |
           echo "GitHub event name: $GITHUB_EVENT_NAME"
           echo "GitHub head ref: $GITHUB_HEAD_REF"
-          echo "GitHub head ref: github.head_ref"
+          echo "GitHub head ref: $github.head_ref"
+          echo "GitHub head ref: $github.event.pull_request.head.ref"
+          echo "GitHub head ref: $github.event.workflow_dispatch.head.ref"
           echo "GitHub base ref: $GITHUB_BASE_REF"
           git fetch --prune --unshallow
           git branch -a
