@@ -20,6 +20,8 @@ jobs:
     steps: 
       - name: checkout repo
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
 
       - name: Setup .NET Core SDK
         uses: actions/setup-dotnet@v4
@@ -30,7 +32,7 @@ jobs:
 
       - run: dotnet format ${{ inputs.sln-path }} --verbosity diagnostic
 
-      - name: Check if any changes to commit
+      - name: Commit Formatted Code
         run: |
           if git diff --quiet; then
             echo "No changes to commit. Exiting..."
