@@ -55,7 +55,7 @@ jobs:
       - name: approved
         env: 
           ENV_NAME: Test
-        run: write-host "Approve for Test"
+        run: echo "Approve for Test"
 
   test-deploy:
     name: Deploy to Test Env
