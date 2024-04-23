@@ -51,8 +51,8 @@ jobs:
           for project in $projects; do
             echo "current project : $project"
             csproj_file="${project##*=}"
-            echo "Current csproj file: $csproj_file"
-            if grep -q 'Microsoft.NET.Sdk.Web' "$csproj_file"; then
+            echo "Current csproj file: ${{ github.workspace }}/$csproj_file"
+            if grep -q 'Microsoft.NET.Sdk.Web' "${{ github.workspace }}/$csproj_file"; then
               web_project="$csproj_file"
               break
             fi
