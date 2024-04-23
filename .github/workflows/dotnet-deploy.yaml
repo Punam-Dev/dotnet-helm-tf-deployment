@@ -37,9 +37,9 @@ jobs:
 
       - run: dotnet test ${{ inputs.sln-path }}
 
-      - run: cat /src/OpenWeatherForecast.Api/OpenWeatherForecast.Api.csproj
-      
-      - run: cat src/OpenWeatherForecast.Api/OpenWeatherForecast.Api.csproj
+      - run: cat /home/runner/work/src/OpenWeatherForecast.Api/OpenWeatherForecast.Api.csproj
+
+      - run: cat home/runner/work/src/OpenWeatherForecast.Api/OpenWeatherForecast.Api.csproj
   
       - run: |
           projects=$(awk -F', ' '/Project/ {print $2}' ${{ inputs.sln-path }} | sed 's/"\(.*\)", "\(.*\)"/\1/' | tr '\\' '/')
