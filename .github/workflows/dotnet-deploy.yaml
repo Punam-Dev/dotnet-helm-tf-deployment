@@ -38,7 +38,7 @@ jobs:
       - run: dotnet test ${{ inputs.sln-path }}
   
       - run: |
-          projects=$(grep -oP '(?<=Project\(").*?(?="\))' ${{ inputs.sln-path }} | sed 's/".*,//')
+          projects=$(awk -F', ' '/Project/ {print $2}' ${{ inputs.sln-path }} | sed 's/"\(.*\)", "\(.*\)"/\1/')
           
           echo "projects : $projects"
 
