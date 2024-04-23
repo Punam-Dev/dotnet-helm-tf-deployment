@@ -38,7 +38,7 @@ jobs:
       - run: dotnet test ${{ inputs.sln-path }}
   
       - run: |
-          web_project=$(awk -F'[:=]' '/Microsoft.NET.Sdk.Web/ { print $1 }' ${{ inputs.sln-path }}.sln)
+          web_project=$(awk -F'[:=]' '/Microsoft.NET.Sdk.Web/ { print $1 }' ${{ inputs.sln-path }})
           echo web_project
 
 
