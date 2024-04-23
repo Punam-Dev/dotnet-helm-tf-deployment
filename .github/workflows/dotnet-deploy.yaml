@@ -47,23 +47,12 @@ jobs:
     steps: 
       - run: echo "DEPLOYING THE INFRASTRUCTURE TO DEV"
 
-  test-approval-gate:
-    name: Approve for Test
-    needs: dev-deploy
-    environment: Test
-    runs-on: ubuntu-latest
-    steps:
-      - name: approved
-        env: 
-          ENV_NAME: Test
-        run: echo "Approve for Test"
-
   test-deploy:
     name: Deploy to Test Env
     runs-on: ubuntu-latest
-    needs: test-approval-gate
+    needs: dev-deploy
     environment: Test
-    
+
     steps: 
       - run: echo "DEPLOYING THE INFRASTRUCTURE TO Test"
 
