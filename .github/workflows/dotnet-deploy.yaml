@@ -37,6 +37,10 @@ jobs:
 
       - run: dotnet test ${{ inputs.sln-path }}
   
+      - run: |
+          web_project=$(awk -F'[:=]' '/Microsoft.NET.Sdk.Web/ { print $1 }' ${{ inputs.solutionpath }}.sln)
+          echo web_project
+
 
   dev-deploy:
     name: Deploy to Dev Env
