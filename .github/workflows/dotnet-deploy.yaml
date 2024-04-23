@@ -38,8 +38,9 @@ jobs:
       - run: dotnet test ${{ inputs.sln-path }}
 
       - run: |
-          projects=$(awk -F', ' '/Project/ {print $2}' ${{ inputs.sln-path }} | sed 's/"\(.*\)", "\(.*\)"/\1/' | tr '\\' '/')
-          
+          # projects=$(awk -F', ' '/Project/ {print $2}' ${{ inputs.sln-path }} | sed 's/"\(.*\)", "\(.*\)"/\1/' | tr '\\' '/')
+          projects=$(awk -F', ' '/Project/ {gsub(/"/, "", $2); print $2}' ${{ inputs.solutionpath }} | sed 's/\\/\//g')
+
           echo "projects : $projects"
 
           # Loop through each project and check if it is a web project
