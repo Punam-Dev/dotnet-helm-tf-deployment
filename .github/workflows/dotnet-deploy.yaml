@@ -39,7 +39,7 @@ jobs:
   
       - run: |
           web_project=$(awk -F'[:=]' '/Microsoft.NET.Sdk.Web/ { print $1 }' ${{ inputs.sln-path }})
-          echo web_project
+          echo $web_project
 
 
   dev-deploy:
