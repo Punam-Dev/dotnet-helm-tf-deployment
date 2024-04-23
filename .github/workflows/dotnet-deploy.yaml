@@ -39,7 +39,7 @@ jobs:
 
       - run: |
           # projects=$(awk -F', ' '/Project/ {print $2}' ${{ inputs.sln-path }} | sed 's/"\(.*\)", "\(.*\)"/\1/' | tr '\\' '/')
-          projects=$(awk -F', ' '/Project/ {gsub(/"/, "", $2); print $2}' ${{ inputs.solutionpath }} | sed 's/\\/\//g')
+          projects=$(awk -F', ' '/Project/ {gsub(/"/, "", $2); print $2}' ${{ inputs.sln-path }} | sed 's/\\/\//g')
 
           echo "projects : $projects"
 
