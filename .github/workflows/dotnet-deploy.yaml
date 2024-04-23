@@ -1,0 +1,67 @@
+name: Deploy
+# Changed 'on' to enable this workflow to be called from other workflows
+on:
+  workflow_call:
+    # Introduced 'inputs' to define parameters that can be passed when calling this workflow
+    inputs:
+      dotnet-version:
+        description: "Specify the .NET version to use"
+        required: true
+        type: string
+      sln-path:
+        description: "Specify the path to the .sln file"
+        required: true
+        type: string
+      tf-path:
+        description: "Specify Terraform path"
+        type: string
+      role-arn:
+        description: "Splecify Deployment role ARN"
+        type: string
+      
+jobs: 
+  build-test:
+    name: Build And Test
+    runs-on: ubuntu-latest
+
+    steps: 
+      - name: checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup .NET Core SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ inputs.dotnet-version }}
+
+      - run: dotnet build ${{ inputs.sln-path }}
+
+      - run: dotnet test ${{ inputs.sln-path }}
+  
+
+  dev-deploy:
+    name: Deploy to Dev Env
+    runs-on: ubuntu-latest
+    needs: build-test
+    environment: Dev
+
+    steps: 
+      - run: echo "DEPLOYING THE INFRASTRUCTURE TO DEV"
+
+  test-approval-gate:
+    needs: dev-deploy
+    environment: Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: approved
+        env: 
+          ENV_NAME: Test
+        run: write-host "Approve for $($env.ENV_NAME)"
+
+  test-deploy:
+    name: Deploy to Test Env
+    runs-on: ubuntu-latest
+    needs: test-approval-gate
+
+    steps: 
+      - run: echo "DEPLOYING THE INFRASTRUCTURE TO Test"
+
