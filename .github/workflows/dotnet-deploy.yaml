@@ -37,8 +37,8 @@ jobs:
 
       - run: dotnet test ${{ inputs.sln-path }}
 
-      - run: |
-          # projects=$(awk -F', ' '/Project/ {print $2}' ${{ inputs.sln-path }} | sed 's/"\(.*\)", "\(.*\)"/\1/' | tr '\\' '/')
+      - name: Publish
+        run: |
           projects=$(awk -F', ' '/Project/ {gsub(/"/, "", $2); print $2}' ${{ inputs.sln-path }} | sed 's/\\/\//g')
 
           echo "projects : $projects"
@@ -53,7 +53,13 @@ jobs:
             fi
           done
 
-          echo "Web proj: $web_project"
+          # Publish the web project if found
+          if [ -n "$web_project" ]; then
+            echo "Web project found: $web_project"
+            dotnet publish "$web_project" -c Release -o ./publish --no-restore --verbosity normal
+          else
+            echo "No web project found in the solution."
+            exit 1
 
 
   dev-deploy:
