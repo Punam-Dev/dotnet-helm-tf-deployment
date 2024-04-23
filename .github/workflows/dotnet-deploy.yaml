@@ -38,7 +38,22 @@ jobs:
       - run: dotnet test ${{ inputs.sln-path }}
   
       - run: |
-          web_project=$(awk -F'[:=]' '/Microsoft.NET.Sdk.Web/ { print $1 }' ${{ inputs.sln-path }})
+          projects=$(grep -oP '(?<=Project\(").*?(?="\))' ${{ inputs.solutionpath }} | sed 's/".*,//')
+          
+          echo $projects
+
+          # Loop through each project and check if it is a web project
+          web_project=""
+          for project in $projects; do
+            echo $project
+            csproj_file="${project##*=}"
+            echo $csproj_file
+            if grep -q 'Microsoft.NET.Sdk.Web' "$csproj_file"; then
+              web_project="$csproj_file"
+              break
+            fi
+          done
+
           echo $web_project
 
 
