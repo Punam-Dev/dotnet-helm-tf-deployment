@@ -37,10 +37,6 @@ jobs:
 
       - run: dotnet test ${{ inputs.sln-path }}
 
-      - run: cat /home/runner/work/OpenWeatherForecast.Api/OpenWeatherForecast.Api/src/OpenWeatherForecast.Api/OpenWeatherForecast.Api.csproj
-
-      - run: cat ${{ github.workspace }}/src/OpenWeatherForecast.Api/OpenWeatherForecast.Api.csproj
-  
       - run: |
           projects=$(awk -F', ' '/Project/ {print $2}' ${{ inputs.sln-path }} | sed 's/"\(.*\)", "\(.*\)"/\1/' | tr '\\' '/')
           
@@ -50,10 +46,8 @@ jobs:
           web_project=""
           for project in $projects; do
             echo "current project : $project"
-            csproj_file="${project##*=}"
-            echo "Current csproj file: ${{ github.workspace }}/$csproj_file"
-            if grep -q 'Microsoft.NET.Sdk.Web' "${{ github.workspace }}/$csproj_file"; then
-              web_project="$csproj_file"
+            if grep -q 'Microsoft.NET.Sdk.Web' "${{ github.workspace }}/$project"; then
+              web_project=${{ github.workspace }}/$project
               break
             fi
           done
