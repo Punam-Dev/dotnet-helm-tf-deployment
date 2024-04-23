@@ -39,7 +39,7 @@ jobs:
 
       - run: cat /home/runner/work/OpenWeatherForecast.Api/OpenWeatherForecast.Api/src/OpenWeatherForecast.Api/OpenWeatherForecast.Api.csproj
 
-      - run: cat home/runner/work/src/OpenWeatherForecast.Api/OpenWeatherForecast.Api.csproj
+      - run: cat ${{ github.workspace }}/src/OpenWeatherForecast.Api/OpenWeatherForecast.Api.csproj
   
       - run: |
           projects=$(awk -F', ' '/Project/ {print $2}' ${{ inputs.sln-path }} | sed 's/"\(.*\)", "\(.*\)"/\1/' | tr '\\' '/')
