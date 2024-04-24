@@ -20,7 +20,12 @@ on:
         description: "Splecify Deployment role ARN"
         required: true
         type: string
-      
+
+permissions:
+  id-token: write
+  contents: read
+  pull-requests: write
+        
 jobs: 
   build-test:
     name: Build And Test
