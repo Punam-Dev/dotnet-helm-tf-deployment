@@ -14,9 +14,11 @@ on:
         type: string
       tf-path:
         description: "Specify Terraform path"
+        required: true
         type: string
-      role-arn:
+      role-name:
         description: "Splecify Deployment role ARN"
+        required: true
         type: string
       
 jobs: 
@@ -70,7 +72,25 @@ jobs:
     environment: Dev
 
     steps: 
-      - run: echo "DEPLOYING THE INFRASTRUCTURE TO DEV"
+      - name: Configure AWS Credentials from AWS Account in
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: arn:aws:iam::${{ vars.ACCOUNT_ID }}:role/${{ inputs.role-name }}
+          aws-region: us-east-1
+          role-session-name: ${{ inputs.role-name }}-deployment
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+
+      - name: Terraform Init
+        id: tfinit
+        working-directory: ${{ inputs.tf-path }}
+        run: terraform init
+
+      - name: Terraform Plan
+        id: tfplan
+        working-directory: ${{ inputs.tf-path }}
+        run: terraform plan -var-file="dev.tfvars"
 
   test-deploy:
     name: Deploy to Test Env
