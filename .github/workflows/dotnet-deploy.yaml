@@ -66,12 +66,12 @@ jobs:
           # Publish the web project if found
           if [ -n "$web_project" ]; then
             echo "Web project found: $web_project"
-            dotnet publish "$web_project" -c Release -o ${{ github.workspace }}/publish --no-restore --verbosity normal /p:Version=${{ github.run_id }}.${{ github.run_number }}.${{ github.run_attempt }}
+            dotnet publish "$web_project" -c Release -o ${{ github.workspace }}/publish --no-restore --verbosity normal
           else
             echo "No web project found in the solution."
             exit 1
           fi
-          
+
       - name: Zip up Publish files
         run: zip -r ${{ github.workspace }}/publish.zip ${{ github.workspace }}/publish/*
 
