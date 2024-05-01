@@ -75,16 +75,11 @@ jobs:
       - name: Zip up Publish files
         run: zip -r ${{ github.workspace }}/publish.zip ${{ github.workspace }}/publish/*
 
-      - name: Configure AWS Credentials from AWS Account in
-        uses: aws-actions/configure-aws-credentials@v4
+      - uses: actions/upload-artifact@v4
         with:
-          role-to-assume: arn:aws:iam::${{ vars.ACCOUNT_ID }}:role/${{ inputs.role-name }}
-          aws-region: us-east-1
-          role-session-name: ${{ inputs.role-name }}-deployment
-
-      - name: Upload to S3
-        run: aws s3 cp ${{ github.workspace }}/publish.zip s3://build-artifacts-github-action/${{ inputs.app-name }}/${{ github.run_id }}.${{ github.run_number }}.${{ github.run_attempt }}
-
+          name: ${{ inputs.app-name }}
+          path: ${{ github.workspace }}/publish.zip
+      
   dev-deploy:
     name: Deploy to Dev Env
     runs-on: ubuntu-latest
@@ -101,6 +96,13 @@ jobs:
           role-to-assume: arn:aws:iam::${{ vars.ACCOUNT_ID }}:role/${{ inputs.role-name }}
           aws-region: us-east-1
           role-session-name: ${{ inputs.role-name }}-deployment
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: ${{ inputs.app-name }}
+
+      - name: Upload to S3
+        run: aws s3 cp ${{ github.workspace }}/publish.zip s3://build-artifacts-github-action/${{ inputs.app-name }}/${{ github.run_id }}.${{ github.run_number }}.${{ github.run_attempt }}
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
