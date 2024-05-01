@@ -120,7 +120,7 @@ jobs:
       - name: Terraform Plan
         id: tfplan
         working-directory: ${{ inputs.tf-path }}
-        run: terraform plan -var-file="tfvars/dev.tfvars" -var "app-version=${{ github.run_id }}.${{ github.run_number }}.${{ github.run_attempt }}"
+        run: terraform plan -var-file="tfvars/dev.tfvars" -var "app_version=${{ github.run_id }}.${{ github.run_number }}.${{ github.run_attempt }}"
 
   test-deploy:
     name: Deploy to Test Env
