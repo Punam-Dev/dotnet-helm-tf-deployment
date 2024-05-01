@@ -8,6 +8,9 @@ on:
         description: "Specify the .NET version to use"
         required: true
         type: string
+      app-name:
+        required: true
+        type: string
       sln-path:
         description: "Specify the path to the .sln file"
         required: true
@@ -63,12 +66,24 @@ jobs:
           # Publish the web project if found
           if [ -n "$web_project" ]; then
             echo "Web project found: $web_project"
-            dotnet publish "$web_project" -c Release -o ./publish --no-restore --verbosity normal
+            dotnet publish "$web_project" -c Release -o ${{ github.workspace }}/publish --no-restore --verbosity normal /p:Version=${{ github.run_id }}.${{ github.run_number }}.${{ github.run_attempt }}
           else
             echo "No web project found in the solution."
             exit 1
           fi
+          
+      - name: Zip up Publish files
+        run: zip -r ${{ github.workspace }}/publish.zip ${{ github.workspace }}/publish/*
 
+      - name: Configure AWS Credentials from AWS Account in
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::${{ vars.ACCOUNT_ID }}:role/${{ inputs.role-name }}
+          aws-region: us-east-1
+          role-session-name: ${{ inputs.role-name }}-deployment
+
+      - name: Upload to S3
+        run: aws s3 cp ${{ github.workspace }}/publish.zip s3://build-artifacts-github-action/${{ inputs.app-name }}/${{ github.run_id }}.${{ github.run_number }}.${{ github.run_attempt }}
 
   dev-deploy:
     name: Deploy to Dev Env
