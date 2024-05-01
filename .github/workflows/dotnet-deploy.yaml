@@ -125,7 +125,7 @@ jobs:
       - name: Terraform Apply
         id: tfApply
         working-directory: ${{ inputs.tf-path }}
-        run: terraform plan -auto-approve -var-file="tfvars/dev.tfvars" -var "app_version=${{ github.run_id }}.${{ github.run_number }}.${{ github.run_attempt }}"
+        run: terraform apply -auto-approve -var-file="tfvars/dev.tfvars" -var "app_version=${{ github.run_id }}.${{ github.run_number }}.${{ github.run_attempt }}"
 
   test-deploy:
     name: Deploy to Test Env
