@@ -1,0 +1,49 @@
+name: Destroy Infra
+# Changed 'on' to enable this workflow to be called from other workflows
+on:
+  workflow_call:
+    # Introduced 'inputs' to define parameters that can be passed when calling this workflow
+    inputs:
+      account-id:
+        required: true
+        type: number
+      tf-path:
+        description: "Specify Terraform path"
+        required: true
+        type: string
+      role-name:
+        description: "Splecify Deployment role ARN"
+        required: true
+        type: string
+
+permissions:
+  id-token: write
+  contents: read
+  pull-requests: write
+
+jobs: 
+  destroy-infra:
+    name: Destroy
+    runs-on: ubuntu-latest
+
+    steps: 
+      - name: checkout repo
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials from AWS Account in
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::${{ inputs.account-id }}:role/${{ inputs.role-name }}
+          aws-region: us-east-1
+          role-session-name: ${{ inputs.role-name }}-deployment
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Init
+        working-directory: ${{ inputs.tf-path }}
+        run: terraform init
+
+      - name: Terraform Destroy
+        working-directory: ${{ inputs.tf-path }}
+        run: terraform apply -destroy -auto-approve
