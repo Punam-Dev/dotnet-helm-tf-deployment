@@ -46,4 +46,4 @@ jobs:
 
       - name: Terraform Destroy
         working-directory: ${{ inputs.tf-path }}
-        run: terraform apply -destroy -auto-approve
+        run: terraform destroy
