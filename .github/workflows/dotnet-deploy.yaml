@@ -56,7 +56,7 @@ jobs:
 
       - run: dotnet build ${{ inputs.sln-path }} --no-restore
   
-      - run: dotnet-coverage collect dotnet test ${{ inputs.sln-path }} -f cobertura -o "coverage.xml" --logger trx --collect:"XPlat Code Coverage"
+      - run: dotnet-coverage collect dotnet test ${{ inputs.sln-path }} -f coverage -o "coverage.xml" --logger trx --collect:"XPlat Code Coverage"
 
       # - run: dotnet test ${{ inputs.sln-path }} --no-build --collect:"XPlat Code Coverage" --logger "trx;LogFileName=test_results.trx"
   
