@@ -52,7 +52,7 @@ jobs:
             dotnet tool install --global dotnet-coverage
 
       - name: Run SonarQube Scanner (Begin)
-        run: dotnet-sonarscanner begin /k:"${{ inputs.app-name }}" /o:"punam-dev" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" d:sonar.cs.vscoveragexml.reportsPaths=coverage.xml
+        run: dotnet-sonarscanner begin /k:"${{ inputs.app-name }}" /o:"punam-dev" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.cs.vscoveragexml.reportsPaths=coverage.xml
 
       - run: dotnet build ${{ inputs.sln-path }} --no-restore
   
