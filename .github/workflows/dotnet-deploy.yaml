@@ -52,15 +52,15 @@ jobs:
             dotnet tool install --global dotnet-coverage
 
       - name: Run SonarQube Scanner (Begin)
-        run: dotnet-sonarscanner begin /k:"${{ inputs.app-name }}" /o:"punam-dev" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml"
+        run: dotnet-sonarscanner begin /k:"${{ inputs.app-name }}" /o:"punam-dev" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" d:sonar.cs.vscoveragexml.reportsPaths=coverage.xml
 
       - run: dotnet build ${{ inputs.sln-path }} --no-restore
   
-      # - run: dotnet-coverage collect dotnet test ${{ inputs.sln-path }} -f cobertura -o "coverage.xml" --logger trx
+      - run: dotnet-coverage collect dotnet test ${{ inputs.sln-path }} -f "xml,cobertura" -o "coverage.xml" --logger trx
 
       # - run: dotnet test ${{ inputs.sln-path }} --no-build --collect:"XPlat Code Coverage" --logger "trx;LogFileName=test_results.trx"
   
-      - run: dotnet test ${{ inputs.sln-path }} --no-build --logger "trx;LogFileName=test_results.trx" /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
+      # - run: dotnet test ${{ inputs.sln-path }} --no-build --logger "trx;LogFileName=test_results.trx" /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
   
       - name: Run SonarQube Scanner (End)
         run: dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
