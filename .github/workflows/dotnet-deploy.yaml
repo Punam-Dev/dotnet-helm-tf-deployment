@@ -43,9 +43,25 @@ jobs:
         with:
           dotnet-version: ${{ inputs.dotnet-version }}
 
-      - run: dotnet build ${{ inputs.sln-path }}
+      - name: Install dependencies
+        run: dotnet restore ${{ inputs.sln-path }}
 
-      - run: dotnet test ${{ inputs.sln-path }}
+      - name: Install SonarScanner and dotnet-coverage
+        run: |
+            dotnet tool install --global dotnet-sonarscanner
+            dotnet tool install --global dotnet-coverage
+
+      - name: Run SonarQube Scanner (Begin)
+        run: dotnet-sonarscanner begin /k:"${{ inputs.app-name }}" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.cs.vscoveragexml.reportsPaths=coverage.xml
+
+      - run: dotnet build ${{ inputs.sln-path }} --no-restore
+  
+      - run: dotnet-coverage collect "dotnet test ${{ inputs.sln-path }}" -f xml -o "coverage.xml" --logger trx --collect:"XPlat Code Coverage"
+
+      - run: dotnet test ${{ inputs.sln-path }} --no-build --collect:"XPlat Code Coverage" --logger "trx;LogFileName=test_results.trx"
+  
+      - name: Run SonarQube Scanner (End)
+        run: dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
 
       - name: Publish
         run: |
@@ -92,40 +108,40 @@ jobs:
       - name: checkout repo
         uses: actions/checkout@v4
 
-      - name: Configure AWS Credentials from AWS Account in
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: arn:aws:iam::${{ vars.ACCOUNT_ID }}:role/${{ inputs.role-name }}
-          aws-region: us-east-1
-          role-session-name: ${{ inputs.role-name }}-deployment
+      # - name: Configure AWS Credentials from AWS Account in
+      #   uses: aws-actions/configure-aws-credentials@v4
+      #   with:
+      #     role-to-assume: arn:aws:iam::${{ vars.ACCOUNT_ID }}:role/${{ inputs.role-name }}
+      #     aws-region: us-east-1
+      #     role-session-name: ${{ inputs.role-name }}-deployment
 
-      - uses: actions/download-artifact@v4
-        with:
-          name: ${{ inputs.app-name }}
+      # - uses: actions/download-artifact@v4
+      #   with:
+      #     name: ${{ inputs.app-name }}
 
-      - name: Display structure of downloaded files
-        run: ls -R
+      # - name: Display structure of downloaded files
+      #   run: ls -R
 
-      - name: Upload to S3
-        run: aws s3 cp ${{ github.workspace }}/publish.zip s3://build-artifacts-github-action/${{ inputs.app-name }}/${{ github.run_id }}.${{ github.run_number }}.${{ github.run_attempt }}/publish.zip
+      # - name: Upload to S3
+      #   run: aws s3 cp ${{ github.workspace }}/publish.zip s3://build-artifacts-github-action/${{ inputs.app-name }}/${{ github.run_id }}.${{ github.run_number }}.${{ github.run_attempt }}/publish.zip
 
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
+      # - name: Setup Terraform
+      #   uses: hashicorp/setup-terraform@v3
 
-      - name: Terraform Init
-        id: tfinit
-        working-directory: ${{ inputs.tf-path }}
-        run: terraform init
+      # - name: Terraform Init
+      #   id: tfinit
+      #   working-directory: ${{ inputs.tf-path }}
+      #   run: terraform init
 
-      - name: Terraform Plan
-        id: tfplan
-        working-directory: ${{ inputs.tf-path }}
-        run: terraform plan -var-file="tfvars/dev.tfvars" -var "app_version=${{ github.run_id }}.${{ github.run_number }}.${{ github.run_attempt }}"
+      # - name: Terraform Plan
+      #   id: tfplan
+      #   working-directory: ${{ inputs.tf-path }}
+      #   run: terraform plan -var-file="tfvars/dev.tfvars" -var "app_version=${{ github.run_id }}.${{ github.run_number }}.${{ github.run_attempt }}"
 
-      - name: Terraform Apply
-        id: tfApply
-        working-directory: ${{ inputs.tf-path }}
-        run: terraform apply -auto-approve -var-file="tfvars/dev.tfvars" -var "app_version=${{ github.run_id }}.${{ github.run_number }}.${{ github.run_attempt }}"
+      # - name: Terraform Apply
+      #   id: tfApply
+      #   working-directory: ${{ inputs.tf-path }}
+      #   run: terraform apply -auto-approve -var-file="tfvars/dev.tfvars" -var "app_version=${{ github.run_id }}.${{ github.run_number }}.${{ github.run_attempt }}"
 
   test-deploy:
     name: Deploy to Test Env
