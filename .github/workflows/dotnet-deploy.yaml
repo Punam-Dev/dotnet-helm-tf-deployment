@@ -58,9 +58,9 @@ jobs:
   
       # - run: dotnet-coverage collect dotnet test ${{ inputs.sln-path }} -f cobertura -o "coverage.xml" --logger trx
 
-      - run: dotnet test ${{ inputs.sln-path }} --no-build --collect:"XPlat Code Coverage" --logger "trx;LogFileName=test_results.trx"
-  
       # - run: dotnet test ${{ inputs.sln-path }} --no-build --collect:"XPlat Code Coverage" --logger "trx;LogFileName=test_results.trx"
+  
+      - run: dotnet test ${{ inputs.sln-path }} --no-build --logger "trx;LogFileName=test_results.trx" /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
   
       - name: Run SonarQube Scanner (End)
         run: dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
